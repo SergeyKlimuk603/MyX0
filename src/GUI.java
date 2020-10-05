@@ -20,7 +20,7 @@ public class GUI extends JFrame {
 	//Dimension d;
 	Game butLisener;
 	
-	Font font = new Font ("Arial",  1, 25);
+	Font font = new Font ("Arial",  1, 20);
 	
 	Box matrixGUI[][];
 	
@@ -55,7 +55,7 @@ public class GUI extends JFrame {
 							}
 							if(gameOver){
 								g.drawImage(imageLine, coordX, coordY, null);
-								label.setText("Сыграем ещё?");
+								//label.setText("Сыграем ещё?");
 							}
 							repaint();
 						}
@@ -107,6 +107,7 @@ public class GUI extends JFrame {
 	}
 	
 	public void setChangeMenu() {
+		remove(gameField);
 		gameOver = false;
 		createButPanel(butHum, butComp);
 		setMenu("Кто ходит первым?");	
@@ -126,10 +127,13 @@ public class GUI extends JFrame {
 	private void initButtons() {
 		butHum = new JButton("Человек");
 		butHum.addActionListener(butLisener);
+		butHum.setFont(font);
 		butComp = new JButton("Компьютер");
 		butComp.addActionListener(butLisener);
+		butComp.setFont(font);
 		butNew = new JButton("Новая игра");
 		butNew.addActionListener(butLisener);
+		butNew.setFont(font);
 		butPanel = new JPanel();
 		butPanel.setPreferredSize(new Dimension(300, 60));
 	}
@@ -150,5 +154,6 @@ public class GUI extends JFrame {
 		label.setHorizontalAlignment(JLabel.CENTER);
 		label.setFont(font);
 		label.setPreferredSize(new Dimension(300, 300));
+		label.addMouseListener(butLisener);
 	}
 }

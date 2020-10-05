@@ -4,6 +4,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 public class Game implements ActionListener, MouseListener {
 	
 	GUI gui;
@@ -47,7 +50,7 @@ public class Game implements ActionListener, MouseListener {
 	public void gameStart(boolean move) {
 		
 		gameOver = false;
-		step = 8;
+		step = 9;
 		nowX = true;
 		humanMoves = move;
 		if(!humanMoves){
@@ -126,8 +129,8 @@ public class Game implements ActionListener, MouseListener {
 				checkBackSlashLine(i, j);		
 			}
 		}
-		if(step < 0){
-			gameOver = true;
+		if(step <= 0){
+			//gameOver = true;
 			gui.label.setText("Ничья!");
 		}
 		
@@ -272,39 +275,82 @@ public class Game implements ActionListener, MouseListener {
 */
 	//Тут записаны ходы компьютера и человека, надо убрать повторяемость кода
 	@Override
-	public void mouseClicked(MouseEvent e) {
+	public void mousePressed(MouseEvent e) {
 		
-		if(gameOver){
-			initMatrix();
-			gui.setStartMenu();
-		} else {
+		if(e.getComponent() instanceof JLabel){
+			System.out.println("Я нажал на метку");
+			if(((JLabel) e.getComponent()).getText() == "Компьютер выиграл. =(" ||
+					((JLabel) e.getComponent()).getText() == "Ничья!" ||
+					((JLabel) e.getComponent()).getText() == "Вы выиграли!!! =)"){
+			//	System.out.println(((JLabel) e.getComponent()).getText());
+				initMatrix();
+				gui.setChangeMenu();
+			}
+		}
 		
 		
-			int x = e.getX()/100;
-			int y = e.getY()/100;
-			if(matrix[x][y] == Box.EMPTY){
-				//nowX = !nowX;
-				if(nowX){
-					matrix[x][y] = Box.X;
-				} else {
-					matrix[x][y] = Box.O;
-				}
-				step -= 1;
-				System.out.println("step = " + step);
-				gui.repaintField(matrix);
-				easyCheckGame(matrix);
-				if(gameOver)return;
-				nowX = !nowX;
-				matrix = comp.compMoves(matrix, nowX);
-				step -= 1;
-				System.out.println("step = " + step);
-				gui.repaintField(matrix);
-				easyCheckGame(matrix);
-				nowX = !nowX;
-			}	
+		
+		if(e.getComponent() instanceof JPanel){
+		System.out.println("Я нажал на панель");
+		
+			if(gameOver){
+				initMatrix();
+				gui.setChangeMenu();
+			} else {
+		
+		
+				int x = e.getX()/100;
+				int y = e.getY()/100;
+				if(matrix[x][y] == Box.EMPTY){
+					//nowX = !nowX;
+					if(nowX){
+						matrix[x][y] = Box.X;
+					} else {
+						matrix[x][y] = Box.O;
+					}
+					step -= 1;
+					System.out.println("step1 = " + step);
+					gui.repaintField(matrix);
+					easyCheckGame(matrix);
+					System.out.println("Game over1 = " + gameOver);
+					if(gameOver){
+						gui.label.setText("Вы выиграли!!! =)");
+						comp.saveMemory(-10);
+						return;
+					}
+					if(step <= 0) {
+						if(!gameOver){
+							comp.saveMemory(0);
+							gameOver = true;
+							return;
+						} 
+					}
+					nowX = !nowX;
+					if(!gameOver){
+						matrix = comp.compMoves(matrix, nowX);
+						step -= 1;
+						System.out.println("step2 = " + step);
+						gui.repaintField(matrix);
+						easyCheckGame(matrix);
+						nowX = !nowX;
+						if(gameOver){
+							gui.label.setText("Компьютер выиграл. =(");
+							comp.saveMemory(30);
+							return;
+						}
+						
+						if(step <= 0) {////////////////////////////
+							if(!gameOver){/////////////////////////////
+								comp.saveMemory(0);
+								gameOver = true;
+								return;
+							} 
+						}
+					}
+				}	
+			}
 		}
 	}
-
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
@@ -316,7 +362,7 @@ public class Game implements ActionListener, MouseListener {
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e) {
+	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
 	}
 
