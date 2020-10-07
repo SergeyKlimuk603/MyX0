@@ -1,8 +1,12 @@
+import java.awt.AWTException;
 import java.awt.Image;
+import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Random;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -12,19 +16,26 @@ public class Game implements ActionListener, MouseListener {
 	GUI gui;
 	Box[][] matrix;
 	Computer comp;
+	Computer comp2;
 	boolean humanMoves = true;
 	int  step = 8;//Количество оставшихся ходов для определения конца игры в случае если никто не выиграл
 	boolean nowX = true;
 	boolean gameOver = false;
 	Image drawLine;
 	Box line[] = new Box[3];
+	Random random = new Random();
+	javax.swing.Timer timer = new javax.swing.Timer(50, this);
+	int computerWinner = 0;
+	int numOfParties = 0;
 	
 	Game() {
 		initMatrix();
 		comp = new Computer();
+		comp2 = new Computer();
 		//line = new Box[3];
 		gui = new GUI("Крестики Нолики", this);
 		gui.setStartMenu();
+		//timer.start();
 	}
 	
 	private void initMatrix() {
@@ -35,6 +46,17 @@ public class Game implements ActionListener, MouseListener {
 	}
 	
 	public void actionPerformed(ActionEvent ae){
+		if(ae.getActionCommand() == null){
+			try{
+				Robot robot = new Robot();
+				//robot.mousePress(InputEvent.BUTTON3_MASK);
+			    robot.mouseRelease(InputEvent.BUTTON2_MASK);
+			} catch (AWTException e) {
+			    e.printStackTrace();
+			}
+			return;
+			
+		};
 		if(ae.getActionCommand().equals("Новая игра")){
 			gui.setChangeMenu();
 		}
@@ -45,7 +67,11 @@ public class Game implements ActionListener, MouseListener {
 		if(ae.getActionCommand().equals("Компьютер")){
 			gameStart(false);
 		}
+		
 	}
+	
+	
+	
 	
 	public void gameStart(boolean move) {
 		
@@ -58,7 +84,7 @@ public class Game implements ActionListener, MouseListener {
 			matrix = comp.compMoves(matrix, nowX);
 			nowX = !nowX;
 			step -= 1;
-			System.out.println("step = " + step);
+			//System.out.println("step = " + step);
 			gui.repaintField(matrix);
 		}
 		gui.gameStart(matrix);
@@ -277,8 +303,12 @@ public class Game implements ActionListener, MouseListener {
 	@Override
 	public void mousePressed(MouseEvent e) {
 		
+		if(e.getButton() != 1) {
+			return;
+		}
+		
 		if(e.getComponent() instanceof JLabel){
-			System.out.println("Я нажал на метку");
+			//System.out.println("Я нажал на метку");
 			if(((JLabel) e.getComponent()).getText() == "Компьютер выиграл. =(" ||
 					((JLabel) e.getComponent()).getText() == "Ничья!" ||
 					((JLabel) e.getComponent()).getText() == "Вы выиграли!!! =)"){
@@ -291,14 +321,18 @@ public class Game implements ActionListener, MouseListener {
 		
 		
 		if(e.getComponent() instanceof JPanel){
-		System.out.println("Я нажал на панель");
+		//System.out.println("Я нажал на панель");
 		
+			
+			
+			
+			
 			if(gameOver){
 				initMatrix();
 				gui.setChangeMenu();
 			} else {
 		
-		
+		//следующие девять строк - ход человека
 				int x = e.getX()/100;
 				int y = e.getY()/100;
 				if(matrix[x][y] == Box.EMPTY){
@@ -308,19 +342,20 @@ public class Game implements ActionListener, MouseListener {
 					} else {
 						matrix[x][y] = Box.O;
 					}
+				
 					step -= 1;
-					System.out.println("step1 = " + step);
+					//System.out.println("step1 = " + step);
 					gui.repaintField(matrix);
 					easyCheckGame(matrix);
-					System.out.println("Game over1 = " + gameOver);
+					//System.out.println("Game over1 = " + gameOver);
 					if(gameOver){
 						gui.label.setText("Вы выиграли!!! =)");
-						comp.saveMemory(-10);
+						comp.saveMemory(-30);
 						return;
 					}
 					if(step <= 0) {
 						if(!gameOver){
-							comp.saveMemory(0);
+							//comp.saveMemory(0);
 							gameOver = true;
 							return;
 						} 
@@ -329,19 +364,19 @@ public class Game implements ActionListener, MouseListener {
 					if(!gameOver){
 						matrix = comp.compMoves(matrix, nowX);
 						step -= 1;
-						System.out.println("step2 = " + step);
+						//System.out.println("step2 = " + step);
 						gui.repaintField(matrix);
 						easyCheckGame(matrix);
 						nowX = !nowX;
 						if(gameOver){
 							gui.label.setText("Компьютер выиграл. =(");
-							comp.saveMemory(30);
+							comp.saveMemory(120);
 							return;
 						}
 						
-						if(step <= 0) {////////////////////////////
-							if(!gameOver){/////////////////////////////
-								comp.saveMemory(0);
+						if(step <= 0) {
+							if(!gameOver){
+								//comp.saveMemory(0);
 								gameOver = true;
 								return;
 							} 
@@ -368,6 +403,98 @@ public class Game implements ActionListener, MouseListener {
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		if(e.getButton() != 2) {
+			return;
+		}
+		//System.out.println("Нажата кнопка 3");
+		
+		
+		if(gameOver){
+			initMatrix();
+			gui.setChangeMenu();
+			comp2 = new Computer();
+		//	System.out.println("Обновили память comp2");
+			int ra = random.nextInt(2);
+			if(ra == 0){
+				gui.butHum.doClick();
+			} else {
+				gui.butComp.doClick();
+			}
+			
+			
+		} else {
+	
+	
+			/////////////////////////////////int x = e.getX()/100;
+			/////////////////////////////////int y = e.getY()/100;
+			/////////////////////////////////if(matrix[x][y] == Box.EMPTY){
+			/////////////////////////////////	//nowX = !nowX;
+			/////////////////////////////////	if(nowX){
+			/////////////////////////////////		matrix[x][y] = Box.X;
+			/////////////////////////////////	} else {
+			/////////////////////////////////		matrix[x][y] = Box.O;
+			/////////////////////////////////	}
+				int x = random.nextInt(3);
+				int y = random.nextInt(3);
+				matrix = comp2.compMoves(matrix, nowX);
+				//System.out.println("Походил компьютер 2");
+				//if(matrix[x][y] == Box.EMPTY){
+					//if(nowX){
+					//	matrix[x][y] = Box.X;
+					//} else {
+					//	matrix[x][y] = Box.O;
+					//}
+					step -= 1;
+					//System.out.println("step1 = " + step);
+					gui.repaintField(matrix);
+					easyCheckGame(matrix);
+					//System.out.println("Game over1 = " + gameOver);
+					if(gameOver){
+					gui.label.setText("Вы выиграли!!! =)");
+					comp.saveMemory(-200);
+					numOfParties++;
+					computerWinner--;// эту строку смело можно удалять, как и переменную
+					System.out.println("ComputerWinner = " + computerWinner + "   Партий сыграно" + numOfParties);
+					return;
+					}
+					if(step <= 0) {
+						if(!gameOver){
+							comp.saveMemory(20);
+							numOfParties++;
+							gameOver = true;
+							return;
+						} 
+					}
+					nowX = !nowX;
+					if(!gameOver){
+						matrix = comp.compMoves(matrix, nowX);
+						//System.out.println("Походил компьютер 1");
+						step -= 1;
+						//System.out.println("step2 = " + step);
+						gui.repaintField(matrix);
+						easyCheckGame(matrix);
+						nowX = !nowX;
+						if(gameOver){
+							gui.label.setText("Компьютер выиграл. =(");
+							comp.saveMemory(500);
+							numOfParties++;
+							computerWinner++;// эту строку смело можно удалять, как и переменную
+							System.out.println("ComputerWinner = " + computerWinner + "   Партий сыграно" + numOfParties);
+							return;
+						}
+					
+						if(step <= 0) {
+							if(!gameOver){
+								comp.saveMemory(20);
+								numOfParties++;
+								gameOver = true;
+								return;
+							} 
+						}
+					}
+				//}
+				
+		}
 		// TODO Auto-generated method stub
 	}
 }

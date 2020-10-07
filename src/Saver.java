@@ -18,7 +18,7 @@ public class Saver {
 			writer.write(string);
 			writer.close();
 		} catch(IOException e) {
-			System.out.println("I could not save memory!!!!!!!!!!!!!!!!!!!!");
+			//System.out.println("I could not save memory!!!!!!!!!!!!!!!!!!!!");
 		}
 		
 	}
@@ -40,7 +40,7 @@ public class Saver {
 			
 		} catch(IOException e) {
 			string = "";
-			System.out.println("I could not read memory!!!!!!!!!!!!!!!!!!!!");
+			//System.out.println("I could not read memory!!!!!!!!!!!!!!!!!!!!");
 		}
 		
 		return mem;	

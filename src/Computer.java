@@ -102,7 +102,7 @@ public class Computer {
 			if(mainMemory.get(mem) != null){    
 				weight = Integer.parseInt(mainMemory.get(mem));  //Если такой ход имеется в памяти, получаем его вес
 			} else {
-				weight = MOVE_WEIGHT / 2;  //Если нет, то ставим вес по умолчанию
+				weight = MOVE_WEIGHT / 20;  //Если нет, то ставим вес по умолчанию
 				}
 			String st = mem + "/" + weight;
 			//System.out.println("Новая строка кода" + st);
@@ -125,7 +125,7 @@ public class Computer {
 			weight[i] = Integer.parseInt(str[1]);
 			summ += weight[i];
 		}
-		System.out.println("summ = " + summ);
+		//System.out.println("summ = " + summ);
 		
 		int rand = random.nextInt(summ);
 		int step = -1;
@@ -178,20 +178,22 @@ public class Computer {
 	}
 	
 	public void saveMemory(int result) {
-		System.out.println("результат игры " + result);
+		//System.out.println("результат игры " + result);
 		String[] str;
 		String st;
 		int weight;
 		int leight = makedMovies.size();
 		int newResult = result;
-		for(int i = 0; i < leight; i++){
+		for(int i = (leight - 1); i >= 0; i--){
 			st = makedMovies.get(i);
 			str = new String[2];
 			str = st.split("/");
 			weight = Integer.parseInt(str[1]);
-			newResult = newResult * (i+1);
+			newResult = newResult / 2;
+			//newResult = result / ((leight - i) * (leight - i));
+			//newResult = newResult * (i+1);
 			weight += newResult;
-			System.out.println("В ход " + str[0] + " записалась разность " + newResult);
+			//System.out.println("В ход " + str[0] + " записалась разность " + newResult);
 			if(weight > MOVE_WEIGHT) {
 				weight = MOVE_WEIGHT;
 			} 
@@ -203,6 +205,7 @@ public class Computer {
 			//System.out.println("Новая память " + st);
 			mainMemory.put(str[0], "" + weight);
 		}
+		//System.out.println();
 		convertMemoryToString();
 		saver.save(memory);
 		

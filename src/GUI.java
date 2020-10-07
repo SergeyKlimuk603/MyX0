@@ -67,7 +67,7 @@ public class GUI extends JFrame {
 	
 	public void drawLine(Image imageLine, int coordX, int coordY, boolean gameOver) {
 		this.imageLine = imageLine;
-		System.out.println(imageLine);
+		//System.out.println(imageLine);
 		this.coordX = coordX * 100;
 		this.coordY = coordY * 100;
 		this.gameOver = gameOver;
